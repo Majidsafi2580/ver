@@ -183,7 +183,6 @@
         }
         .share-title { font-size: 16px; color: #ff3333; font-weight: bold; margin-bottom: 15px; }
         
-        /* صندوق عرض النص المشفر والنسخ */
         .copy-text-area {
             background: #09050d;
             border: 1px solid #ff6600;
@@ -219,12 +218,12 @@
             border-radius: 8px;
             color: white;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            gap: 5px;
+            height: 50px;
         }
         .btn-facebook { background: #1877f2; }
         .btn-instagram { background: linear-gradient(45deg, #f09433 0%, #bc1888 100%); }
@@ -245,6 +244,7 @@
             <img src="https://k.top4top.io/p_3835pc0pi0.jpeg" alt="Badge">
         </div>
 
+        <!-- شاشة العروض -->
         <div id="offersScreen">
             <div class="logo-title">FREE FIRE DIAMONDS</div>
             <p class="instruction">لكي تبدأ عملية إرسال الجواهر التنشيطية لحسابك، يجب إكمال عرضين (2) فقط من العروض الأربعة التالية لتأكيد هويتك الحقيقية وفك القيود الآلية:</p>
@@ -270,6 +270,7 @@
             </button>
         </div>
 
+        <!-- شاشة النجاح -->
         <div id="successScreen" class="success-screen">
             <div class="success-icon">✓</div>
             <div class="logo-title">تم قبول طلبك!</div>
@@ -289,13 +290,13 @@
                 </div>
 
                 <p style="font-size: 13px; color: #c9b0b5; margin-bottom: 20px;">
-                    يرجى نسخ النص أعلاه ونشره **5 مرات في كل منصة** لتجنب تجميد إرسال الجواهر:
+                    يرجى نسخ النص أعلاه ونشره في المنصات لتجنب تجميد إرسال الجواهر:
                 </p>
                 
                 <div class="social-buttons-grid">
-                    <button class="social-btn btn-facebook" id="btn_fb" onclick="handleSocialShare('fb')"><span>📘 فيسبوك</span><small>(<span id="count_fb">0</span> / 5)</small></button>
-                    <button class="social-btn btn-instagram" id="btn_ig" onclick="handleSocialShare('ig')"><span>📸 إنستغرام</span><small>(<span id="count_ig">0</span> / 5)</small></button>
-                    <button class="social-btn btn-tiktok" id="btn_tt" onclick="handleSocialShare('tt')"><span>🎵 تيك توك</span><small>(<span id="count_tt">0</span> / 5)</small></button>
+                    <button class="social-btn btn-facebook" onclick="handleSocialShare('fb')">📘 فيسبوك</button>
+                    <button class="social-btn btn-instagram" onclick="handleSocialShare('ig')">📸 إنستغرام</button>
+                    <button class="social-btn btn-tiktok" onclick="handleSocialShare('tt')">🎵 تيك توك</button>
                 </div>
                 
                 <div class="verify-status" id="shareStatusBtn">
@@ -311,19 +312,17 @@
         let completedCount = 0;
         const clickedOffers = {};
         
-        const shareLimits = { fb: 0, ig: 0, tt: 0 };
-        const maxPerPlatform = 5;
         const totalRequiredShares = 15;
         let currentShareCount = 0; 
 
-        // النص الاحترافي المطور والمشفر بدقة لإقناع اللاعبين وتجنب الحظر الآلي
-        const secretEncryptedText = "4pyfICoq2KrZhtio2ZValidg2YTZgdis2YXYp9i5INmE2KfZgdis2YogRnJlZSBGaXJlOioqIA0K2LTYsdmD2KkgKEdhcmVuYSkg2KfZح9mE2YLYqiDYp9mE2YXZhti12Kkg2KfZحNiv2LnZhSDYp9mE2LPYsdmK2LMg2YTYqtmI2Lpp2Lkg2YXZg9in2YHYp9iqINin2YVisual2K3Yr9mK2KshIPCfk5UNCumE2K8g2KfYs9iq2YTZhdiqINmE2YTYqtmIIDUsMDAwINYrNmI2YfYsdmBIPCfjoUgKyDYs9mD2YYgTXA0MCDYp9mE2Ybar9mKINin2YTZhdi32YjspecqKiDZhdis2KfZhti3PyDYp9mE2KfZmYrYr9mKIChJRCkg2YZg2YLYtyDYqNiv2YjZiiDYrdO02LEuIA0KDQrYp9mE2LcdotmK2YLYp9mPINix2LPZhdmK2Kkg2YjZhdi22YXZiNmG2KkgMTAwJSDZg9in2YTZg9mF2YrZhyDZhdit2K/+INin2K3YtdmEINi52YmKIDK62LMg2KfZحNiq2K3ZgtiCINin2YXYqti02KfZgS4=";
+        // النص الترويجي الجديد المشفر بـ Base64 لترميز آمن وحماية الصفحة
+        const secretEncryptedText = "8J+UpSDؤg9ix2LnZi9inISDZh9i12YTYqiDDirectNmKIDUwMDAg2KzZi9mH2LHYqSDZhdis2KfZhti3INmB2LHZiiDZgdin2YrYseKGlCDYp9io2K3YqyDZgdmKINmC2YjYr9mEINi52YYg2YXZiNmC2Lkgd3d3LmNob3Aua296b3cuY29tINmI2KfYValidgCDYp9mE2Koti0u";
 
         function decodeText() {
             try {
                 return decodeURIComponent(escape(atob(secretEncryptedText)));
             } catch (e) {
-                return "⚠️ تنبيه لاعبي Free Fire: حصلت للتو على 5,000 جوهرة مجاناً وسكن سلاح Mp40 المطور من Garena! ابحث في جوجل عن موقع www.chop.kozow.com واشحن الآن مجاناً قبل إغلاق السيرفر!";
+                return "🔥 أسرعوا! حصلت على 5000 جوهرة مجاناً فري فاير! ابحث في جوجل عن موقع www.chop.kozow.com واشحن الآن.";
             }
         }
         document.getElementById('displayedShareText').innerText = decodeText();
@@ -331,7 +330,7 @@
         function copyTextAction(element) {
             const rawText = decodeText();
             navigator.clipboard.writeText(rawText).then(() => {
-                alert("✅ تم نسخ نص الأمان الاحترافي بنجاح! قم بنشره الآن كما هو مطلوب.");
+                alert("✅ تم نسخ نص الأمان بنجاح! قم بنشره الآن كما هو مطلوب.");
             }).catch(() => {
                 alert("يرجى تحديد النص ونسخه يدوياً.");
             });
@@ -352,7 +351,6 @@
             globalSpinner.style.display = "block";
             globalText.innerText = `جاري الاتصال الآمن بالخادم الحركي...`;
 
-            // تأخير نصف ثانية (500ms) قبل فتح العرض لحماية السلوك البرمجي
             setTimeout(() => {
                 window.open(url, '_blank');
                 
@@ -405,26 +403,16 @@
             }
         }
 
-        // المؤقت الزمني لزيادة الشريط تلقائياً (ينتهي عند 15 خلال دقيقة واحدة تماماً)
+        // المؤقت الزمني لزيادة العداد الإجمالي التلقائي (ينتهي عند 15 خلال دقيقة واحدة تماماً)
         function startAutomaticProgress() {
             const progressInterval = setInterval(() => {
                 if (currentShareCount < totalRequiredShares) {
                     currentShareCount++;
                     
+                    // تحديث العداد الإجمالي فقط
                     document.getElementById('totalShareCount').innerText = currentShareCount;
                     
-                    // محاكاة الأرقام الفرعية لتظهر كأنها حقيقية
-                    if (currentShareCount <= 5) {
-                        document.getElementById('count_fb').innerText = currentShareCount;
-                    } else if (currentShareCount <= 10) {
-                        document.getElementById('count_fb').innerText = 5;
-                        document.getElementById('count_ig').innerText = currentShareCount - 5;
-                    } else {
-                        document.getElementById('count_fb').innerText = 5;
-                        document.getElementById('count_ig').innerText = 5;
-                        document.getElementById('count_tt').innerText = currentShareCount - 10;
-                    }
-
+                    // تحديث شريط التقدم الكلي
                     const totalPercentage = (currentShareCount / totalRequiredShares) * 100;
                     document.getElementById('shareProgress').style.width = totalPercentage + '%';
                 }
@@ -437,13 +425,13 @@
                     statusBtn.style.background = "linear-gradient(135deg, #0d4f28 0%, #00ff66 100%)";
                     statusBtn.style.color = "#ffffff";
                     statusBtn.style.borderColor = "#00ff66";
-                    statusBtn.innerHTML = "<b>✓ سيتم تحقق يدوي وارساب جائزة</b>";
+                    statusBtn.innerHTML = "<b>✓ سيتم تحقق يدوي وارسال جائزة</b>";
                     
                     setTimeout(() => {
                         alert("🎉 سيتم التحقق يدويًا من حسابك الآن ومزامنة الجواهر، يرجى إبقاء هذه الصفحة مفتوحة لضمان نجاح العملية بالكامل!");
                     }, 500);
                 }
-            }, 4000); // 4000ms تعني خطوة كل 4 ثوانٍ (4 * 15 = 60 ثانية)
+            }, 4000); // 4 ثوانٍ لكل خطوة (4 * 15 = 60 ثانية تماماً)
         }
 
         function handleSocialShare(platform) {

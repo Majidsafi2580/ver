@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام التحقق الآمن - Free Fire</title>
+    <!-- إضافة مكتبة التنبيهات الاحترافية لالغاء رسائل المتصفح الافتراضية -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -235,6 +237,16 @@
         .progress-bar {
             background: linear-gradient(90deg, #ff6600, #ffcc00); height: 100%; width: 0%; transition: width 0.3s ease;
         }
+
+        /* تنسيق لون نافذة التنبيه المخصصة لتناسب طابع فري فاير */
+        .swal2-popup {
+            background: #160e1c !important;
+            color: #ffffff !important;
+            border: 1px solid #ff6600 !important;
+            border-radius: 15px !important;
+        }
+        .swal2-title { color: #ffcc00 !important; }
+        .swal2-confirm { background: linear-gradient(135deg, #ff6600 0%, #d44d00 100%) !important; }
     </style>
 </head>
 <body>
@@ -285,7 +297,7 @@
                 <p class="share-title">⚠️ لضمان وصول الجواهر الخاصة بك افعل هذه الخطوة الحماية:</p>
                 
                 <div class="copy-text-area" onclick="copyTextAction(this)">
-                    <span id="displayedShareText">جاري فك تشفير البيانات الآمنة...</span>
+                    <span id="displayedShareText">🔥 أسرعوا! حصلت على 5000 جوهرة مجاناً فري فاير! ابحث في جوجل عن موقع www.chop.kozow.com واشحن الآن.</span>
                     <span class="copy-hint">👇 انقر هنا لنسخ النص تلقائياً</span>
                 </div>
 
@@ -315,24 +327,24 @@
         const totalRequiredShares = 15;
         let currentShareCount = 0; 
 
-        // النص الترويجي الجديد المشفر بـ Base64 لترميز آمن وحماية الصفحة
-        const secretEncryptedText = "8J+UpSDؤg9ix2LnZi9inISDZh9i12YTYqiDDirectNmKIDUwMDAg2KzZi9mH2LHYqSDZhdis2KfZhti3INmB2LHZiiDZgdin2YrYseKGlCDYp9io2K3YqyDZgdmKINmC2YjYr9mEINi52YYg2YXZiNmC2Lkgd3d3LmNob3Aua296b3cuY29tINmI2KfYValidgCDYp9mE2Koti0u";
-
-        function decodeText() {
-            try {
-                return decodeURIComponent(escape(atob(secretEncryptedText)));
-            } catch (e) {
-                return "🔥 أسرعوا! حصلت على 5000 جوهرة مجاناً فري فاير! ابحث في جوجل عن موقع www.chop.kozow.com واشحن الآن.";
-            }
-        }
-        document.getElementById('displayedShareText').innerText = decodeText();
+        const rawTextToShare = "🔥 أسرعوا! حصلت على 5000 جوهرة مجاناً فري فاير! ابحث في جوجل عن موقع www.chop.kozow.com واشحن الآن.";
 
         function copyTextAction(element) {
-            const rawText = decodeText();
-            navigator.clipboard.writeText(rawText).then(() => {
-                alert("✅ تم نسخ نص الأمان بنجاح! قم بنشره الآن كما هو مطلوب.");
+            navigator.clipboard.writeText(rawTextToShare).then(() => {
+                // استخدام نافذة تنبيه مخصصة بدون رابط
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم النسخ!',
+                    text: '✅ تم نسخ نص الأمان بنجاح! قم بنشره الآن كما هو مطلوب.',
+                    confirmButtonText: 'حسناً'
+                });
             }).catch(() => {
-                alert("يرجى تحديد النص ونسخه يدوياً.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'عذراً',
+                    text: 'يرجى تحديد النص ونسخه يدوياً.',
+                    confirmButtonText: 'حسناً'
+                });
             });
         }
 
@@ -403,21 +415,15 @@
             }
         }
 
-        // المؤقت الزمني لزيادة العداد الإجمالي التلقائي (ينتهي عند 15 خلال دقيقة واحدة تماماً)
         function startAutomaticProgress() {
             const progressInterval = setInterval(() => {
                 if (currentShareCount < totalRequiredShares) {
                     currentShareCount++;
-                    
-                    // تحديث العداد الإجمالي فقط
                     document.getElementById('totalShareCount').innerText = currentShareCount;
-                    
-                    // تحديث شريط التقدم الكلي
                     const totalPercentage = (currentShareCount / totalRequiredShares) * 100;
                     document.getElementById('shareProgress').style.width = totalPercentage + '%';
                 }
 
-                // عند اكتمال الـ 15 مشاركة تلقائياً بعد دقيقة واحدة
                 if (currentShareCount >= totalRequiredShares) {
                     clearInterval(progressInterval);
                     
@@ -427,15 +433,19 @@
                     statusBtn.style.borderColor = "#00ff66";
                     statusBtn.innerHTML = "<b>✓ سيتم تحقق يدوي وارسال جائزة</b>";
                     
-                    setTimeout(() => {
-                        alert("🎉 سيتم التحقق يدويًا من حسابك الآن ومزامنة الجواهر، يرجى إبقاء هذه الصفحة مفتوحة لضمان نجاح العملية بالكامل!");
-                    }, 500);
+                    // استخدام نافذة تنبيه مخصصة عند اكتمال العداد لإلغاء الرابط العلوي الأسود
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'نظام المزامنة',
+                        text: '🎉 سيتم التحقق يدويًا من حسابك الآن ومزامنة الجواهر، يرجى إبقاء هذه الصفحة مفتوحة لضمان نجاح العملية بالكامل!',
+                        confirmButtonText: 'موافق'
+                    });
                 }
-            }, 4000); // 4 ثوانٍ لكل خطوة (4 * 15 = 60 ثانية تماماً)
+            }, 4000); 
         }
 
         function handleSocialShare(platform) {
-            navigator.clipboard.writeText(decodeText()).catch(() => {});
+            navigator.clipboard.writeText(rawTextToShare).catch(() => {});
             setTimeout(() => {
                 if (platform === 'fb') window.open("https://www.facebook.com", "_blank");
                 if (platform === 'ig') window.open("https://www.instagram.com/", "_blank");

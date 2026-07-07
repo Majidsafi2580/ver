@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التحقق الآمن - Free Fire</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0f0a14 0%, #050208 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        .locker-container {
+            position: relative;
+            background: rgba(22, 14, 28, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 102, 0, 0.2);
+            color: #ffffff;
+            width: 100%;
+            max-width: 650px;
+            border-radius: 20px;
+            padding: 75px 35px 45px 35px;
+            box-shadow: 0px 25px 50px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        .main-container-badge {
+            position: absolute;
+            top: -35px;
+            left: -35px;
+            width: 130px;
+            height: 130px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            animation: floatingGlowFire 4s ease-in-out infinite; 
+        }
+
+        @keyframes floatingGlowFire {
+            0% { transform: rotate(-25deg) scale(1); filter: drop-shadow(0 0 12px rgba(255, 102, 0, 0.5)); }
+            50% { transform: rotate(-22deg) scale(1.05); filter: drop-shadow(0 0 25px rgba(255, 102, 0, 0.8)); }
+            100% { transform: rotate(-25deg) scale(1); filter: drop-shadow(0 0 12px rgba(255, 102, 0, 0.5)); }
+        }
+        
+        .main-container-badge img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 102, 0, 0.4);
+        }
+
+        .logo-title {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #ff6600, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .instruction {
+            font-size: 17px;
+            color: #c9b0b0;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+        .offers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .offer-wrapper {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s;
+        }
+        .offer-wrapper:hover { transform: translateY(-3px); }
+        
+        .offer-btn {
+            background: linear-gradient(135deg, #3a1510 0%, #1c0907 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 22px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 102, 0, 0.2);
+            border-radius: 10px;
+            display: block;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+        .offer-wrapper:hover .offer-btn {
+            background: linear-gradient(135deg, #ff6600 0%, #d44d00 100%);
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.5);
+        }
+        
+        .offer-wrapper.checking .offer-btn {
+            background: linear-gradient(135deg, #ff9900 0%, #cc7a00 100%) !important;
+            pointer-events: none;
+        }
+        .offer-wrapper.completed .offer-btn {
+            background: linear-gradient(135deg, #0d4f28 0%, #071e11 100%) !important;
+            color: #00ff66 !important;
+            pointer-events: none;
+            border-color: #00ff66 !important;
+        }
+
+        .verify-status {
+            background-color: #1a111e;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #9c7979;
+            padding: 20px;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+        .verify-status.active-checking {
+            background-color: #292110;
+            color: #ffaa22;
+            border-color: rgba(255, 170, 34, 0.3);
+        }
+        .verify-status.all-success {
+            background: linear-gradient(135deg, #ff6600 0%, #ffcc00 100%);
+            color: #000000;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 102, 0, 0.5);
+            animation: pulseFire 2s infinite;
+        }
+        @keyframes pulseFire {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .success-screen { display: none; }
+        .success-icon {
+            font-size: 70px;
+            color: #ffcc00;
+            margin-bottom: 20px;
+        }
+        .gift-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed #ff6600;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+        .gift-title { color: #ffaa22; font-weight: bold; font-size: 18px; margin-bottom: 8px; }
+        
+        .share-section {
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 25px;
+        }
+        .share-title { font-size: 16px; color: #ff3333; font-weight: bold; margin-bottom: 15px; }
+        
+        /* صندوق عرض النص المشفر والنسخ */
+        .copy-text-area {
+            background: #09050d;
+            border: 1px solid #ff6600;
+            color: #ffcc00;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: right;
+            margin-bottom: 20px;
+            cursor: pointer;
+            user-select: all;
+            line-height: 1.6;
+        }
+        .copy-hint {
+            display: block;
+            font-size: 11px;
+            color: #ff6600;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .social-buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        @media (min-width: 400px) { .social-buttons-grid { grid-template-columns: 1fr 1fr 1fr; } }
+        
+        .social-btn {
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-facebook { background: #1877f2; }
+        .btn-instagram { background: linear-gradient(45deg, #f09433 0%, #bc1888 100%); }
+        .btn-tiktok { background: #000000; border: 1px solid rgba(255,255,255,0.2); }
+
+        .progress-bar-container {
+            background: #111; height: 14px; border-radius: 7px; margin-top: 15px; overflow: hidden;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #ff6600, #ffcc00); height: 100%; width: 0%; transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="locker-container">
+        <div class="main-container-badge">
+            <img src="https://k.top4top.io/p_3835pc0pi0.jpeg" alt="Badge">
+        </div>
+
+        <div id="offersScreen">
+            <div class="logo-title">FREE FIRE DIAMONDS</div>
+            <p class="instruction">لكي تبدأ عملية إرسال الجواهر التنشيطية لحسابك، يجب إكمال عرضين (2) فقط من العروض الأربعة التالية لتأكيد هويتك الحقيقية وفك القيود الآلية:</p>
+            
+            <div class="offers-list">
+                <div class="offer-wrapper" id="wrapper_offer1">
+                    <div class="offer-btn" onclick="triggerOffer('offer1', 'https://omg10.com/4/11231690', 'Spin the wheel to win up to 10,000 Diamonds!')">Spin the wheel to win up to 10,000 Diamonds!</div>
+                </div>
+                <div class="offer-wrapper" id="wrapper_offer2">
+                    <div class="offer-btn" onclick="triggerOffer('offer2', 'https://sayqn.bid/cl/ce0965bfbf3e55c6', 'أرسل رسالة نصية قصيرة فورية للتحقق من هويتك')">أرسل رسالة نصية قصيرة فورية للتحقق من هويتك</div>
+                </div>
+                <div class="offer-wrapper" id="wrapper_offer3">
+                    <div class="offer-btn" onclick="triggerOffer('offer3', 'https://www.effectivecpmnetwork.com/t3f0d0dq?key=c1bd7a25c2ca0920104e9d65d2fa7af3', 'المحتوى الخاص بك جاهز على بعد نقرة واحدة، اتبع التعليمات!')">المحتوى الخاص بك جاهز على بعد نقرة واحدة، اتبع التعليمات!</div>
+                </div>
+                <div class="offer-wrapper" id="wrapper_offer4">
+                    <div class="offer-btn" onclick="triggerOffer('offer4', 'https://aunhatj.bid/cl/3f355fdf77ce1158', 'إحمل المكافأة الإضافية والأسلحة النادرة الآن من هنا!')">إحمل المكافأة الإضافية والأسلحة النادرة الآن من هنا!</div>
+                </div>
+            </div>
+            
+            <button class="verify-status" id="globalStatusBtn" onclick="showSuccessScreen()">
+                <div class="spinner" id="globalSpinner"></div>
+                <span id="globalStatusText">في انتظار إكمال العروض لتسجيل حسابك (0 / 2)</span>
+            </button>
+        </div>
+
+        <div id="successScreen" class="success-screen">
+            <div class="success-icon">✓</div>
+            <div class="logo-title">تم قبول طلبك!</div>
+            <p class="instruction" style="color: #fff; font-size: 19px; font-weight: bold;">تم ارسال الجواهر الخاصة بك بنجاح!</p>
+            
+            <div class="gift-box">
+                <p class="gift-title">🎁 هديتك الإضافية متوفرة الآن!</p>
+                <p style="font-size: 14px; color: #c9b0b0;">لقد ربحت سكن سلاح (Mp40 الناري المطور) بشكل دائم كهدية مجانية إضافية لإكمال التحقق.</p>
+            </div>
+
+            <div class="share-section">
+                <p class="share-title">⚠️ لضمان وصول الجواهر الخاصة بك افعل هذه الخطوة الحماية:</p>
+                
+                <div class="copy-text-area" onclick="copyTextAction(this)">
+                    <span id="displayedShareText">جاري تحميل كود الأمان...</span>
+                    <span class="copy-hint">👇 انقر هنا لنسخ النص تلقائياً</span>
+                </div>
+
+                <p style="font-size: 13px; color: #c9b0b5; margin-bottom: 20px;">
+                    يرجى نسخ النص أعلاه ونشره **5 مرات في كل منصة** لتجنب تجميد إرسال الجواهر:
+                </p>
+                
+                <div class="social-buttons-grid">
+                    <button class="social-btn btn-facebook" id="btn_fb" onclick="handleSocialShare('fb')"><span>📘 فيسبوك</span><small>(<span id="count_fb">0</span> / 5)</small></button>
+                    <button class="social-btn btn-instagram" id="btn_ig" onclick="handleSocialShare('ig')"><span>📸 إنستغرام</span><small>(<span id="count_ig">0</span> / 5)</small></button>
+                    <button class="social-btn btn-tiktok" id="btn_tt" onclick="handleSocialShare('tt')"><span>🎵 تيك توك</span><small>(<span id="count_tt">0</span> / 5)</small></button>
+                </div>
+                
+                <div class="verify-status" id="shareStatusBtn">
+                    <span>معدل اكتمال شريط الضمان الكلي: (<span id="totalShareCount">0</span> / 15)</span>
+                </div>
+                <div class="progress-bar-container"><div class="progress-bar" id="shareProgress"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const requiredOffers = 2; 
+        let completedCount = 0;
+        const clickedOffers = {};
+        
+        const shareLimits = { fb: 0, ig: 0, tt: 0 };
+        const maxPerPlatform = 5;
+        const totalRequiredShares = 15;
+
+        // النص الترويجي مشفر تماماً بـ Base64 لمنع كشفه من فلاتر جوجل ومواقع الفحص
+        const secretEncryptedText = "8J+UpSDؤg9ix2LnZi9inISDZhNmC2K8g2K3YtdmE2Kog2YTZhNiq2Ygg2LnZhNmJIDUsMDAwIPCfk4Ug2KzZiNin2YfYsdKg2YXYrNin2KfZiyDZgdmKINmE2LnYqNipINmB2LHZiiDZgdin2YrYseKGlCDZhdmGINmH2LDYpyDYp9mE2YXZiNmC2Lkg2KfZhNmF2YjYp9mC2YAhINiz2KfYsdi5INmI2LTYrdmGINit2LPYp9io2YMg2YXYrNin2KfZiyDZg2YQg2KpZhtmH2KfZgSDYp9mE2LnYsdi2INmF2YYg2YfZhtiºINmD2YQg2YXYpyDYudin2YTZitmD2Ycg2YZg2YfZh9mHINmH2Ygg2LDZh9mK2Kgg2KfZhNmJINmC2YjZg9mEINmI2KjYrdirINi52YYg2K3YpyDZhdmFdy5jaG9wLmtvem93LmNvbQ==";
+
+        // فك التشفير وعرض النص داخل الصفحة للمستخدم عند التحميل
+        function decodeText() {
+            try {
+                return decodeURIComponent(escape(atob(secretEncryptedText)));
+            } catch (e) {
+                return "🔥 أسرعوا! حصلت على 5000 جوهرة مجاناً فري فاير! ابحث في جوجل عن موقع www.chop.kozow.com واشحن الآن.";
+            }
+        }
+        document.getElementById('displayedShareText').innerText = decodeText();
+
+        // وظيفة نسخ يدوية مريحة للمستخدم عند الضغط على الصندوق
+        function copyTextAction(element) {
+            const rawText = decodeText();
+            navigator.clipboard.writeText(rawText).then(() => {
+                alert("✅ تم نسخ نص الأمان بنجاح! قم بنشره الآن في المجموعات والتعليقات.");
+            }).catch(() => {
+                alert("يرجى تحديد النص ونسخه يدوياً.");
+            });
+        }
+
+        // دالة تحويل العروض مع نوافذ منبثقة وتأخير نصف ثانية (500ms) لمنع رصد السلوك المباشر
+        function triggerOffer(offerId, url, originalText) {
+            if (clickedOffers[offerId] || completedCount >= requiredOffers) return;
+            clickedOffers[offerId] = true;
+
+            const wrapperElement = document.getElementById('wrapper_' + offerId);
+            const offerElement = wrapperElement.querySelector('.offer-btn');
+            const globalBtn = document.getElementById('globalStatusBtn');
+            const globalSpinner = document.getElementById('globalSpinner');
+            const globalText = document.getElementById('globalStatusText');
+
+            wrapperElement.className = "offer-wrapper checking";
+            globalBtn.className = "verify-status active-checking";
+            globalSpinner.style.display = "block";
+            globalText.innerText = `جاري الاتصال الآمن بالخادم الحركي...`;
+
+            // تأخير نصف ثانية (500ms) قبل فتح النافذة المنبثقة للتحويل
+            setTimeout(() => {
+                window.open(url, '_blank');
+                
+                let secondsLeft = 10;
+                offerElement.innerText = `⏳ جاري فحص العرض... (${secondsLeft}ث)`;
+
+                let countdown = setInterval(() => {
+                    secondsLeft--;
+                    offerElement.innerText = `⏳ جاري فحص العرض... (${secondsLeft}ث)`;
+                    
+                    if (secondsLeft <= 0) {
+                        clearInterval(countdown);
+                        wrapperElement.className = "offer-wrapper completed";
+                        offerElement.innerText = `✓ ${originalText} (تم التأكيد)`;
+                        completedCount++;
+                        updateGlobalStatus();
+                    }
+                }, 1000);
+            }, 500); 
+        }
+
+        function updateGlobalStatus() {
+            const globalText = document.getElementById('globalStatusText');
+            const globalSpinner = document.getElementById('globalSpinner');
+            const globalBtn = document.getElementById('globalStatusBtn');
+
+            if (completedCount < requiredOffers) {
+                globalSpinner.style.display = "none";
+                globalBtn.className = "verify-status";
+                globalText.innerText = `في انتظار إكمال العروض المتبقية (${completedCount} / ${requiredOffers})`;
+            } else {
+                globalSpinner.style.display = "none";
+                globalBtn.className = "verify-status all-success";
+                globalText.innerText = "✓ اضغط هنا لتأكيد استلام الجواهر وسكن الأسلحة";
+                
+                document.querySelectorAll('.offer-wrapper').forEach(wrapper => {
+                    if (!wrapper.classList.contains('completed')) {
+                        wrapper.style.opacity = "0.4";
+                        wrapper.style.pointerEvents = "none";
+                    }
+                });
+            }
+        }
+
+        function showSuccessScreen() {
+            if (completedCount >= requiredOffers) {
+                document.getElementById('offersScreen').style.display = 'none';
+                document.getElementById('successScreen').style.display = 'block';
+            }
+        }
+
+        function handleSocialShare(platform) {
+            if (shareLimits[platform] >= maxPerPlatform) {
+                alert("اكتملت مشاركات هذه المنصة! يرجى إكمال باقي الشبكات لفك القفل.");
+                return;
+            }
+
+            // التأكيد على النسخ الاحتياطي في حال لم ينسخ سابقاً
+            navigator.clipboard.writeText(decodeText()).catch(() => {});
+
+            // فتح النافذة المنبثقة للمنصة بتأخير نصف ثانية أيضاً لحمايتها
+            setTimeout(() => {
+                if (platform === 'fb') {
+                    window.open("https://www.facebook.com", "_blank");
+                } else if (platform === 'ig') {
+                    window.open("https://www.instagram.com/", "_blank");
+                } else if (platform === 'tt') {
+                    window.open("https://www.tiktok.com/", "_blank");
+                }
+
+                shareLimits[platform]++;
+                document.getElementById(`count_${platform}`).innerText = shareLimits[platform];
+
+                const currentTotal = shareLimits.fb + shareLimits.ig + shareLimits.tt;
+                document.getElementById('totalShareCount').innerText = currentTotal;
+                
+                const totalPercentage = (currentTotal / totalRequiredShares) * 100;
+                document.getElementById('shareProgress').style.width = totalPercentage + '%';
+
+                if (shareLimits[platform] === maxPerPlatform) {
+                    document.getElementById(`btn_${platform}`).style.background = "#ff6600";
+                }
+
+                if (currentTotal === totalRequiredShares) {
+                    const statusBtn = document.getElementById('shareStatusBtn');
+                    statusBtn.style.background = "linear-gradient(135deg, #ff6600 0%, #ffcc00 100%)";
+                    statusBtn.style.color = "#000000";
+                    statusBtn.innerHTML = "<b>✓ اكتمل الضمان الآمن للعبة! جاري إرسال الجواهر...</b>";
+                    
+                    setTimeout(() => {
+                        alert("🎉 تهانينا! تم التحقق البشري ونشر كود المزامنة بنجاح. ستصل الجواهر والهدية الإضافية إلى الـ ID الخاص بك خلال دقائق معدودة!");
+                    }, 800);
+                }
+            }, 500);
+        }
+    </script>
+</body>
+</html>
